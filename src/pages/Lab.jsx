@@ -100,110 +100,115 @@ export default function Lab() {
 
   return (
     <main className="app-shell">
-      <header className="top-bar">
-        <a href="/" className="brand-link">
-          DevCard
-        </a>
-        <a href="/" className="glass-btn">
-          ← Back to App
-        </a>
-      </header>
+      <div className="lab-container">
+        <header className="top-bar">
+          <a href="/" className="brand-link">
+            DevCard
+          </a>
+          <a href="/" className="glass-btn">
+            ← Back to App
+          </a>
+        </header>
 
-      <section className="hero-header fade-up">
-        <span className="pill-badge">
-          <span className="live-dot" /> Experiment #532
-        </span>
-        <h1 className="hero-title">
-          <LottieSlot
-            slot="heading-glitch"
-            fallback={<span>Onboarding Experiment</span>}
-          />
-        </h1>
-        <p className="hero-sub">
-          Hypothesis: a one-field instant onboarding (&ldquo;enter GitHub username, get your
-          card&rdquo;) produces more created cards per visitor than a 3-step setup quiz, because
-          less friction before the payoff wins.
-        </p>
-      </section>
-
-      <section className="glass-panel lab-panel fade-up">
-        <div className="lab-meta">
-          <div>
-            <span className="mono-label">FLAG &amp; METRIC</span>
-            <p className="meta-value">onboarding_flow (50/50) → card_created</p>
-          </div>
-          <div>
-            <span className="mono-label">STATUS</span>
-            <p className="meta-value accent-text">
-              {loading ? 'Loading…' : (data?.status || 'Unavailable').toUpperCase()}
-            </p>
-          </div>
-        </div>
-
-        {loading && <p className="muted-text">Loading experiment metrics…</p>}
-
-        {!loading && fetchError && <p className="error-banner">{fetchError}</p>}
-
-        {!loading && !fetchError && isMissingKey && (
-          <div className="notice-banner">
-            API key not configured. Add <code>FLAGSMITH_API_KEY</code> to <code>.env</code> or
-            Vercel Environment Variables to view live results.
-          </div>
-        )}
-
-        {!loading && !fetchError && !isMissingKey && variants.length > 0 && (
-          <div className="variant-grid">
-            {variants.map((v) => {
-              const winPct = toPercentNumber(v.winProbability);
-              return (
-                <article key={v.key} className="variant-card">
-                  <div className="variant-head">
-                    <h3>{v.label}</h3>
-                    <span className="mono-label">{v.key}</span>
-                  </div>
-                  <div className="variant-metrics">
-                    <div>
-                      <span className="mono-label">EXPOSURES</span>
-                      <p className="metric-num">{v.exposures}</p>
-                    </div>
-                    <div>
-                      <span className="mono-label">CONVERSIONS</span>
-                      <p className="metric-num">{v.conversions}</p>
-                    </div>
-                    <div>
-                      <span className="mono-label">RATE</span>
-                      <p className="metric-num">{formatPercent(v.conversionRate)}</p>
-                    </div>
-                  </div>
-                  <div className="win-bar-wrap">
-                    <div className="win-bar-label">
-                      <span className="mono-label">WIN PROBABILITY</span>
-                      <span className="mono-label">{formatPercent(v.winProbability)}</span>
-                    </div>
-                    <div className="win-bar-track">
-                      <div className="win-bar-fill" style={{ width: `${winPct}%` }} />
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        )}
-
-        {!loading && !fetchError && !isMissingKey && variants.length === 0 && (
-          <p className="muted-text">
-            Pending: experiment collecting data. Results will appear here once real visitor
-            exposures and <code>card_created</code> events are aggregated.
+        <section className="hero-header fade-up">
+          <span className="pill-badge">
+            <span className="live-dot" /> Experiment #532
+          </span>
+          <h1 className="hero-title">
+            Onboarding{' '}
+            <span className="gradient-word">
+              <LottieSlot
+                slot="heading-glitch"
+                fallback={<span>Experiment</span>}
+              />
+            </span>
+          </h1>
+          <p className="hero-sub">
+            Hypothesis: a one-field instant onboarding (&ldquo;enter GitHub username, get your
+            card&rdquo;) produces more created cards per visitor than a 3-step setup quiz, because
+            less friction before the payoff wins.
           </p>
-        )}
-      </section>
+        </section>
 
-      <section className="glass-panel lab-notes fade-up">
-        <h2 className="section-title">What we learned &amp; what we&apos;d ship</h2>
-        <p className="muted-text">
-          {learningSummary || 'Pending: experiment collecting data'}
-        </p>
-      </section>
+        <section className="glass-panel lab-panel fade-up">
+          <div className="lab-meta">
+            <div>
+              <span className="mono-label">FLAG &amp; METRIC</span>
+              <p className="meta-value">onboarding_flow (50/50) → card_created</p>
+            </div>
+            <div>
+              <span className="mono-label">STATUS</span>
+              <p className="meta-value accent-text">
+                {loading ? 'Loading…' : (data?.status || 'Unavailable').toUpperCase()}
+              </p>
+            </div>
+          </div>
+
+          {loading && <p className="muted-text">Loading experiment metrics…</p>}
+
+          {!loading && fetchError && <p className="error-banner">{fetchError}</p>}
+
+          {!loading && !fetchError && isMissingKey && (
+            <div className="notice-banner">
+              API key not configured. Add <code>FLAGSMITH_API_KEY</code> to <code>.env</code> or
+              Vercel Environment Variables to view live results.
+            </div>
+          )}
+
+          {!loading && !fetchError && !isMissingKey && variants.length > 0 && (
+            <div className="variant-grid">
+              {variants.map((v) => {
+                const winPct = toPercentNumber(v.winProbability);
+                return (
+                  <article key={v.key} className="variant-card">
+                    <div className="variant-head">
+                      <h3>{v.label}</h3>
+                      <span className="mono-label">{v.key}</span>
+                    </div>
+                    <div className="variant-metrics">
+                      <div>
+                        <span className="mono-label">EXPOSURES</span>
+                        <p className="metric-num">{v.exposures}</p>
+                      </div>
+                      <div>
+                        <span className="mono-label">CONVERSIONS</span>
+                        <p className="metric-num">{v.conversions}</p>
+                      </div>
+                      <div>
+                        <span className="mono-label">RATE</span>
+                        <p className="metric-num">{formatPercent(v.conversionRate)}</p>
+                      </div>
+                    </div>
+                    <div className="win-bar-wrap">
+                      <div className="win-bar-label">
+                        <span className="mono-label">WIN PROBABILITY</span>
+                        <span className="mono-label">{formatPercent(v.winProbability)}</span>
+                      </div>
+                      <div className="win-bar-track">
+                        <div className="win-bar-fill" style={{ width: `${winPct}%` }} />
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+
+          {!loading && !fetchError && !isMissingKey && variants.length === 0 && (
+            <p className="muted-text">
+              Pending: experiment collecting data. Results will appear here once real visitor
+              exposures and <code>card_created</code> events are aggregated.
+            </p>
+          )}
+        </section>
+
+        <section className="glass-panel lab-notes fade-up">
+          <h2 className="section-title">What we learned &amp; what we&apos;d ship</h2>
+          <p className="muted-text">
+            {learningSummary || 'Pending: experiment collecting data'}
+          </p>
+        </section>
+      </div>
     </main>
   );
 }
