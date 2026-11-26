@@ -18,7 +18,8 @@ A one-field instant onboarding (`"enter GitHub username, get your card"`) produc
 - **SDK Instrumentation (`@flagsmith/flagsmith` `12.6.0`):**
   - `src/lib/flagsmith.js`: generates/persists an anonymous `visitorId` in `localStorage` (`try/catch` with memory fallback), initializes `enableEvents: true` + `identity` before flag evaluation, tracks `card_created` + `await flagsmith.flushEvents()`, and flushes on `pagehide` / `beforeunload`.
   - `src/App.jsx`: wraps the app in `<FlagsmithProvider>` and evaluates `useExperiment('onboarding_flow')` where onboarding renders (recording `$flag_exposure`).
-  - `api/card.js`: returns an embeddable `image/svg+xml` card for GitHub READMEs (`Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400`). Never fires conversion events.
+  - `api/github.js` + `api/_github.js`: server-side GitHub proxy with `GITHUB_TOKEN`, ETag conditional requests, 1-hour in-memory cache, and `Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400`.
+  - `api/card.js`: uses the same cached `api/_github.js` helper to return an embeddable `image/svg+xml` card for GitHub READMEs. Never fires conversion events.
   - `api/lab.js`: reads Experiment `532` + `/results/` server-side using `FLAGSMITH_API_KEY`.
 
 ## Architecture
@@ -49,7 +50,10 @@ flowchart LR
    ```bash
    npm run dev
    ```
-   A lightweight Vite `configureServer` middleware in `vite.config.js` loads `.env` and routes `/api/lab` and `/api/card` directly to the serverless handlers in `api/` during `npm run dev`. This keeps local development working on `http://localhost:5173` without needing a separate `vercel dev` process.
+   A lightweight Vite `configureServer` middleware in `vite.config.js` loads `.env` and routes `/api/github`, `/api/lab`, and `/api/card` directly to `api/` during `npm run dev` on `http://localhost:5173`. Alternatively, you can run the full Vercel serverless runtime locally with:
+   ```bash
+   npx vercel dev
+   ```
 
 ## Results & What We Learned
 *Pending: experiment collecting data (Experiment `532` will be started once deployed to Vercel).*

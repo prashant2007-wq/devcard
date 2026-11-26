@@ -7,16 +7,22 @@ function localApiPlugin() {
   return {
     name: 'local-vercel-api',
     configureServer(server) {
+      // loadEnv with prefix '' loads ALL .env variables (not just VITE_ ones),
+      // so FLAGSMITH_API_KEY and GITHUB_TOKEN are available in the serverless shims.
       const env = loadEnv(server.config.mode, process.cwd(), '');
       for (const [k, v] of Object.entries(env)) {
-        if (process.env[k] === undefined) {
-          process.env[k] = v;
-        }
+        process.env[k] = v; // always overwrite — .env is the source of truth locally
       }
 
       server.middlewares.use(async (req, res, next) => {
         const parsed = url.parse(req.url || '', true);
-        if (parsed.pathname !== '/api/lab' && parsed.pathname !== '/api/card') {
+        const routeMap = {
+          '/api/lab': 'lab.js',
+          '/api/card': 'card.js',
+          '/api/github': 'github.js',
+        };
+        const fileName = routeMap[parsed.pathname];
+        if (!fileName) {
           return next();
         }
 
@@ -38,7 +44,6 @@ function localApiPlugin() {
         });
 
         try {
-          const fileName = parsed.pathname === '/api/lab' ? 'lab.js' : 'card.js';
           const fileUrl = pathToFileURL(path.resolve(process.cwd(), 'api', fileName)).href;
           const { default: handler } = await import(`${fileUrl}?t=${Date.now()}`);
           await handler(reqShim, resShim);
