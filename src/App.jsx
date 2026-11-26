@@ -14,15 +14,15 @@ import DevCard from './components/DevCard.jsx';
 import Lab from './pages/Lab.jsx';
 
 const VIBES = [
-  { id: 'cyberpunk', label: 'CYBERPUNK', desc: 'High-contrast neon grid' },
-  { id: 'solaris', label: 'SOLARIS', desc: 'Deep orbital telemetry' },
-  { id: 'obsidian', label: 'OBSIDIAN', desc: 'Stealth monochrome' },
+  { id: 'cyberpunk', label: 'Cyberpunk', desc: 'Crisp neon contrast' },
+  { id: 'solaris', label: 'Solaris', desc: 'Deep orbital tone' },
+  { id: 'obsidian', label: 'Obsidian', desc: 'Quiet monochrome' },
 ];
 
 const ACCENTS = [
-  { id: 'cyan', label: 'NEON CYAN', hex: '#00f0ff' },
-  { id: 'violet', label: 'PLASMA VIOLET', hex: '#b55cff' },
-  { id: 'emerald', label: 'MATRIX EMERALD', hex: '#00ffaa' },
+  { id: 'cyan', label: 'Sky Cyan', hex: '#38bdf8' },
+  { id: 'violet', label: 'Soft Violet', hex: '#a78bfa' },
+  { id: 'emerald', label: 'Mint Emerald', hex: '#34d399' },
 ];
 
 function OnboardingWorkspace() {
@@ -67,7 +67,7 @@ function OnboardingWorkspace() {
     try {
       const [data] = await Promise.all([
         fetchGitHubProfile(username),
-        new Promise((r) => setTimeout(r, 950)),
+        new Promise((r) => setTimeout(r, 850)),
       ]);
       setProfile(data);
       // Track conversion ONLY after the card is actually created.
@@ -83,41 +83,33 @@ function OnboardingWorkspace() {
     <main className="app-shell">
       <header className="top-bar">
         <a href="/" className="brand-link">
-          <span className="status-dot" />
-          DEVCARD // 2040
+          DevCard
         </a>
-        <a href="/lab" className="hud-btn">
-          EXPERIMENT LAB →
+        <a href="/lab" className="glass-btn">
+          Experiment Lab →
         </a>
       </header>
 
-      <section className="hero-header">
-        <span className="status-chip">
-          <span className="pulse-dot" /> SCAN READY // GITHUB TELEMETRY
-        </span>
+      <section className="hero-header fade-up">
+        <span className="pill-badge">GitHub Developer Card</span>
         <h1 className="hero-title">
           <LottieSlot
             slot="heading-glitch"
-            fallback={<span>HOLOGRAPHIC DEVCARD</span>}
+            fallback={<span>Your GitHub, distilled.</span>}
           />
         </h1>
         <p className="hero-sub">
-          Mint a 2040 holographic developer card from your GitHub profile. Embed it live in your
-          README or export as PNG.
+          Generate a holographic developer card from your public GitHub profile, ready to embed
+          in your README or download as PNG.
         </p>
       </section>
 
       {!profile && !scanning && (
-        <section className="hud-panel onboarding-panel">
-          <span className="corner tl" />
-          <span className="corner tr" />
-          <span className="corner bl" />
-          <span className="corner br" />
-
+        <section className="glass-panel onboarding-panel fade-up">
           {isQuizFlow ? (
             <div className="quiz-flow">
               <div className="quiz-progress">
-                <span>STEP 0{quizStep} / 03</span>
+                <span className="mono-label">STEP {quizStep} OF 3</span>
                 <div className="progress-track">
                   <div
                     className="progress-fill"
@@ -128,7 +120,7 @@ function OnboardingWorkspace() {
 
               {quizStep === 1 && (
                 <div className="quiz-step">
-                  <label className="hud-label">01 // SELECT CARD VIBE</label>
+                  <label className="mono-label">CHOOSE CARD STYLE</label>
                   <div className="option-grid">
                     {VIBES.map((item) => (
                       <button
@@ -145,10 +137,10 @@ function OnboardingWorkspace() {
                   <div className="quiz-nav">
                     <button
                       type="button"
-                      className="hud-btn primary"
+                      className="glass-btn primary"
                       onClick={() => setQuizStep(2)}
                     >
-                      NEXT: ACCENT →
+                      Continue →
                     </button>
                   </div>
                 </div>
@@ -156,7 +148,7 @@ function OnboardingWorkspace() {
 
               {quizStep === 2 && (
                 <div className="quiz-step">
-                  <label className="hud-label">02 // SELECT ACCENT FREQUENCY</label>
+                  <label className="mono-label">CHOOSE ACCENT COLOUR</label>
                   <div className="option-grid">
                     {ACCENTS.map((item) => (
                       <button
@@ -177,17 +169,17 @@ function OnboardingWorkspace() {
                   <div className="quiz-nav">
                     <button
                       type="button"
-                      className="hud-btn"
+                      className="glass-btn"
                       onClick={() => setQuizStep(1)}
                     >
-                      ← BACK
+                      ← Back
                     </button>
                     <button
                       type="button"
-                      className="hud-btn primary"
+                      className="glass-btn primary"
                       onClick={() => setQuizStep(3)}
                     >
-                      NEXT: USERNAME →
+                      Continue →
                     </button>
                   </div>
                 </div>
@@ -195,31 +187,31 @@ function OnboardingWorkspace() {
 
               {quizStep === 3 && (
                 <form onSubmit={handleGenerate} className="quiz-step">
-                  <label className="hud-label" htmlFor="gh-user-quiz">
-                    03 // ENTER GITHUB HANDLE
+                  <label className="mono-label" htmlFor="gh-user-quiz">
+                    GITHUB USERNAME
                   </label>
                   <div className="input-row">
                     <input
                       id="gh-user-quiz"
                       type="text"
-                      className="hud-input"
+                      className="glass-input"
                       placeholder="e.g. torvalds"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       autoFocus
                       required
                     />
-                    <button type="submit" className="hud-btn primary">
-                      GENERATE CARD
+                    <button type="submit" className="glass-btn primary">
+                      Generate Card
                     </button>
                   </div>
                   <div className="quiz-nav">
                     <button
                       type="button"
-                      className="hud-btn"
+                      className="glass-btn"
                       onClick={() => setQuizStep(2)}
                     >
-                      ← BACK
+                      ← Back
                     </button>
                   </div>
                 </form>
@@ -227,22 +219,22 @@ function OnboardingWorkspace() {
             </div>
           ) : (
             <form onSubmit={handleGenerate} className="instant-flow">
-              <label className="hud-label" htmlFor="gh-user-instant">
-                GITHUB USERNAME <span className="caret" aria-hidden="true">_</span>
+              <label className="mono-label" htmlFor="gh-user-instant">
+                GITHUB USERNAME
               </label>
               <div className="input-row">
                 <input
                   id="gh-user-instant"
                   type="text"
-                  className="hud-input"
+                  className="glass-input"
                   placeholder="e.g. torvalds"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   autoFocus
                   required
                 />
-                <button type="submit" className="hud-btn primary">
-                  GENERATE CARD
+                <button type="submit" className="glass-btn primary">
+                  Generate Card
                 </button>
               </div>
             </form>
@@ -260,14 +252,14 @@ function OnboardingWorkspace() {
           <div className="reset-wrap">
             <button
               type="button"
-              className="hud-btn"
+              className="glass-btn"
               onClick={() => {
                 setProfile(null);
                 setError('');
                 setQuizStep(1);
               }}
             >
-              SCAN ANOTHER DEVELOPER
+              Generate another card
             </button>
           </div>
         </>

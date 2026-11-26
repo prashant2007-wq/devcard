@@ -5,15 +5,19 @@ const EXPERIMENT_ID = 532;
 const DEFAULT_ENV_KEY = 'TYyFN4ReBv6a7cUXWVFUup';
 
 export default async function handler(req, res) {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-store');
+
   const apiKey = process.env.FLAGSMITH_API_KEY;
   const envKey = process.env.VITE_FLAGSMITH_ENV_KEY || DEFAULT_ENV_KEY;
 
   if (!apiKey) {
     res.status(200).json({
       configured: false,
+      errorCode: 'MISSING_FLAGSMITH_API_KEY',
       experimentId: EXPERIMENT_ID,
       status: 'unconfigured',
-      message: 'Set FLAGSMITH_API_KEY in .env (local) or Vercel Environment Variables to load live Flagsmith results.',
+      message: 'API key not configured',
       variants: [],
     });
     return;
@@ -32,10 +36,10 @@ export default async function handler(req, res) {
     ]);
 
     if (!expRes.ok) {
-      const text = await expRes.text();
       res.status(expRes.status).json({
         configured: true,
-        error: `Flagsmith experiment fetch failed (${expRes.status}): ${text}`,
+        errorCode: 'FLAGSMITH_API_ERROR',
+        message: `Flagsmith API returned ${expRes.status}.`,
       });
       return;
     }
@@ -43,7 +47,6 @@ export default async function handler(req, res) {
     const experiment = await expRes.json();
     const results = resultsRes.ok ? await resultsRes.json() : null;
 
-    res.setHeader('Cache-Control', 'no-store');
     res.status(200).json({
       configured: true,
       experimentId: EXPERIMENT_ID,
@@ -53,10 +56,11 @@ export default async function handler(req, res) {
       startedAt: experiment.started_at,
       results,
     });
-  } catch (err) {
+  } catch {
     res.status(500).json({
       configured: true,
-      error: `Server error fetching Flagsmith results: ${err.message}`,
+      errorCode: 'LAB_FETCH_FAILED',
+      message: 'Unable to reach Flagsmith Experimentation API.',
     });
   }
 }

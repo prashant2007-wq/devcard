@@ -2,17 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import LottieSlot from './LottieSlot.jsx';
 
 const ACCENT_MAP = {
-  cyan: { primary: '#00f0ff', secondary: '#0077ff', label: 'NEON CYAN' },
-  violet: { primary: '#b55cff', secondary: '#ff2e93', label: 'PLASMA VIOLET' },
-  emerald: { primary: '#00ffaa', secondary: '#00b894', label: 'MATRIX EMERALD' },
+  cyan: { primary: '#38bdf8', secondary: '#818cf8' },
+  violet: { primary: '#a78bfa', secondary: '#f472b6' },
+  emerald: { primary: '#34d399', secondary: '#38bdf8' },
 };
 
 const RARITY_STYLES = {
-  Mythic: { color: '#ff2e93', glow: 'rgba(255, 46, 147, 0.35)' },
-  Legendary: { color: '#ffb800', glow: 'rgba(255, 184, 0, 0.32)' },
-  Epic: { color: '#b55cff', glow: 'rgba(181, 92, 255, 0.3)' },
-  Rare: { color: '#00f0ff', glow: 'rgba(0, 240, 255, 0.25)' },
-  Common: { color: '#94a3b8', glow: 'rgba(148, 163, 184, 0.18)' },
+  Mythic: { color: '#f472b6', glow: 'rgba(244, 114, 182, 0.22)' },
+  Legendary: { color: '#fbbf24', glow: 'rgba(251, 191, 36, 0.2)' },
+  Epic: { color: '#a78bfa', glow: 'rgba(167, 139, 250, 0.2)' },
+  Rare: { color: '#38bdf8', glow: 'rgba(56, 189, 248, 0.18)' },
+  Common: { color: '#94a3b8', glow: 'rgba(148, 163, 184, 0.12)' },
 };
 
 function AnimatedCounter({ value }) {
@@ -26,7 +26,7 @@ function AnimatedCounter({ value }) {
     }
 
     let start = null;
-    const duration = 650;
+    const duration = 500;
     let rafId = null;
 
     const tick = (ts) => {
@@ -45,8 +45,8 @@ function AnimatedCounter({ value }) {
 }
 
 /**
- * Interactive holographic DevCard with 3D cursor/device tilt,
- * conic-gradient foil, rarity aura, README embed snippet, PNG download, and share link.
+ * Hero frosted-glass DevCard with subtle holographic sheen, gentle 3D tilt,
+ * README SVG embed snippet, PNG download, and shareable link.
  */
 export default function DevCard({ profile, vibe = 'cyberpunk', accent = 'cyan' }) {
   const cardRef = useRef(null);
@@ -55,23 +55,16 @@ export default function DevCard({ profile, vibe = 'cyberpunk', accent = 'cyan' }
 
   const accentTheme = ACCENT_MAP[accent] || ACCENT_MAP.cyan;
   const rarityTheme = RARITY_STYLES[profile.rarity] || RARITY_STYLES.Common;
-  const isHighRarity = ['Epic', 'Legendary', 'Mythic'].includes(profile.rarity);
 
-  // Device orientation tilt on mobile
   useEffect(() => {
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     if (reduced) return;
 
     const onOrient = (e) => {
       if (e.beta == null || e.gamma == null) return;
-      const rx = Math.max(-10, Math.min(10, (e.beta - 45) * 0.25));
-      const ry = Math.max(-10, Math.min(10, e.gamma * 0.25));
-      setTilt({
-        rx: -rx,
-        ry,
-        gx: 50 + ry * 3,
-        gy: 50 + rx * 3,
-      });
+      const rx = Math.max(-7, Math.min(7, (e.beta - 45) * 0.2));
+      const ry = Math.max(-7, Math.min(7, e.gamma * 0.2));
+      setTilt({ rx: -rx, ry, gx: 50 + ry * 3, gy: 50 + rx * 3 });
     };
 
     window.addEventListener('deviceorientation', onOrient);
@@ -85,8 +78,8 @@ export default function DevCard({ profile, vibe = 'cyberpunk', accent = 'cyan' }
     const px = (e.clientX - rect.left) / rect.width;
     const py = (e.clientY - rect.top) / rect.height;
     setTilt({
-      rx: (0.5 - py) * 16,
-      ry: (px - 0.5) * 16,
+      rx: (0.5 - py) * 10,
+      ry: (px - 0.5) * 10,
       gx: px * 100,
       gy: py * 100,
     });
@@ -117,50 +110,49 @@ export default function DevCard({ profile, vibe = 'cyberpunk', accent = 'cyan' }
     if (!ctx) return;
 
     const grad = ctx.createLinearGradient(0, 0, 1280, 540);
-    grad.addColorStop(0, '#060913');
-    grad.addColorStop(0.55, '#0d1526');
-    grad.addColorStop(1, '#090d1a');
+    grad.addColorStop(0, '#090d16');
+    grad.addColorStop(1, '#111827');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 1280, 540);
 
-    ctx.strokeStyle = accentTheme.primary;
-    ctx.lineWidth = 4;
+    ctx.strokeStyle = 'rgba(255,255,255,0.16)';
+    ctx.lineWidth = 3;
     ctx.strokeRect(12, 12, 1256, 516);
 
     ctx.fillStyle = accentTheme.primary;
-    ctx.font = 'bold 22px monospace';
-    ctx.fillText(`DEVCARD // ${vibe.toUpperCase()}`, 64, 72);
+    ctx.font = 'bold 20px monospace';
+    ctx.fillText(`DEVCARD`, 64, 72);
 
     ctx.fillStyle = rarityTheme.color;
-    ctx.fillText(`[${profile.rarity.toUpperCase()}]`, 1040, 72);
+    ctx.fillText(profile.rarity.toUpperCase(), 1080, 72);
 
     ctx.fillStyle = '#f8fafc';
-    ctx.font = 'bold 54px sans-serif';
+    ctx.font = 'bold 52px sans-serif';
     ctx.fillText(profile.name.slice(0, 24), 64, 158);
 
     ctx.fillStyle = accentTheme.primary;
-    ctx.font = '28px monospace';
-    ctx.fillText(`@${profile.username}`, 64, 206);
+    ctx.font = '26px monospace';
+    ctx.fillText(`@${profile.username}`, 64, 204);
 
     ctx.fillStyle = '#94a3b8';
     ctx.font = '24px sans-serif';
-    ctx.fillText((profile.bio || '').slice(0, 68), 64, 256);
+    ctx.fillText((profile.bio || '').slice(0, 68), 64, 254);
 
     ctx.fillStyle = '#f8fafc';
-    ctx.font = 'bold 40px monospace';
+    ctx.font = 'bold 40px sans-serif';
     ctx.fillText(String(profile.totalStars.toLocaleString()), 64, 360);
     ctx.fillText(String(profile.publicRepos.toLocaleString()), 360, 360);
     ctx.fillText(String(profile.followers.toLocaleString()), 660, 360);
 
     ctx.fillStyle = '#64748b';
-    ctx.font = '20px monospace';
-    ctx.fillText('STARS', 64, 396);
-    ctx.fillText('REPOS', 360, 396);
-    ctx.fillText('FOLLOWERS', 660, 396);
+    ctx.font = '18px monospace';
+    ctx.fillText('STARS', 64, 394);
+    ctx.fillText('REPOS', 360, 394);
+    ctx.fillText('FOLLOWERS', 660, 394);
 
-    ctx.fillStyle = '#e2e8f0';
-    ctx.font = '24px monospace';
-    ctx.fillText(`TOP STACK: ${profile.topLanguages.join('  •  ')}`, 64, 472);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.font = '22px monospace';
+    ctx.fillText(profile.topLanguages.join('  •  '), 64, 470);
 
     const link = document.createElement('a');
     link.download = `devcard-${profile.username}.png`;
@@ -172,7 +164,7 @@ export default function DevCard({ profile, vibe = 'cyberpunk', accent = 'cyan' }
     <section className="card-stage">
       <div
         ref={cardRef}
-        className={`holo-card ${isHighRarity ? 'high-rarity' : ''}`}
+        className="holo-card"
         onMouseMove={handleMouseMove}
         onMouseLeave={resetTilt}
         style={{
@@ -192,8 +184,8 @@ export default function DevCard({ profile, vibe = 'cyberpunk', accent = 'cyan' }
 
         <div className="card-inner">
           <div className="card-top">
-            <span className="status-chip">DEVCARD // {vibe.toUpperCase()}</span>
-            <span className="rarity-badge">{profile.rarity.toUpperCase()}</span>
+            <span className="mono-label">DEVCARD</span>
+            <span className="rarity-badge">{profile.rarity}</span>
           </div>
 
           <div className="card-identity">
@@ -201,8 +193,8 @@ export default function DevCard({ profile, vibe = 'cyberpunk', accent = 'cyan' }
               src={profile.avatarUrl}
               alt={`${profile.username} avatar`}
               className="card-avatar"
-              width="72"
-              height="72"
+              width="68"
+              height="68"
             />
             <div>
               <h2 className="card-name">{profile.name}</h2>
@@ -217,19 +209,19 @@ export default function DevCard({ profile, vibe = 'cyberpunk', accent = 'cyan' }
               <span className="stat-value">
                 <AnimatedCounter value={profile.totalStars} />
               </span>
-              <span className="stat-label">STARS</span>
+              <span className="mono-label">STARS</span>
             </div>
             <div className="stat-box">
               <span className="stat-value">
                 <AnimatedCounter value={profile.publicRepos} />
               </span>
-              <span className="stat-label">REPOS</span>
+              <span className="mono-label">REPOS</span>
             </div>
             <div className="stat-box">
               <span className="stat-value">
                 <AnimatedCounter value={profile.followers} />
               </span>
-              <span className="stat-label">FOLLOWERS</span>
+              <span className="mono-label">FOLLOWERS</span>
             </div>
           </div>
 
@@ -243,16 +235,10 @@ export default function DevCard({ profile, vibe = 'cyberpunk', accent = 'cyan' }
         </div>
       </div>
 
-      {/* Real-use hooks: README SVG embed, PNG download, Share link */}
-      <div className="hud-panel actions-panel">
-        <span className="corner tl" />
-        <span className="corner tr" />
-        <span className="corner bl" />
-        <span className="corner br" />
-
+      <div className="glass-panel actions-panel fade-up">
         <div className="embed-box">
-          <label className="hud-label" htmlFor="readme-embed">
-            GITHUB README EMBED (LIVE SVG)
+          <label className="mono-label" htmlFor="readme-embed">
+            GITHUB README EMBED
           </label>
           <div className="embed-row">
             <input
@@ -260,29 +246,29 @@ export default function DevCard({ profile, vibe = 'cyberpunk', accent = 'cyan' }
               type="text"
               readOnly
               value={readmeSnippet}
-              className="hud-input mono-sm"
+              className="glass-input mono-sm"
               onClick={(e) => e.target.select()}
             />
             <button
               type="button"
-              className="hud-btn primary"
+              className="glass-btn primary"
               onClick={() => copyText('embed', readmeSnippet)}
             >
-              {copied === 'embed' ? 'COPIED ✓' : 'COPY MD'}
+              {copied === 'embed' ? 'Copied' : 'Copy Markdown'}
             </button>
           </div>
         </div>
 
         <div className="action-buttons">
-          <button type="button" className="hud-btn" onClick={downloadPng}>
-            DOWNLOAD PNG
+          <button type="button" className="glass-btn" onClick={downloadPng}>
+            Download PNG
           </button>
           <button
             type="button"
-            className="hud-btn"
+            className="glass-btn"
             onClick={() => copyText('share', shareUrl)}
           >
-            {copied === 'share' ? 'LINK COPIED ✓' : 'COPY SHARE LINK'}
+            {copied === 'share' ? 'Link Copied' : 'Copy Share Link'}
           </button>
         </div>
       </div>

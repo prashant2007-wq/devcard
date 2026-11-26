@@ -2,15 +2,13 @@ import { useEffect, useState } from 'react';
 import LottieSlot from './LottieSlot.jsx';
 
 const STEPS = [
-  'CONTACTING GITHUB TELEMETRY...',
-  'PARSING REPOSITORIES & LANGUAGES...',
-  'COMPUTING RARITY MATRIX...',
-  'SYNTHESIZING HOLOGRAPHIC FOIL...',
+  'Fetching GitHub profile…',
+  'Analyzing repositories & languages…',
+  'Computing rarity tier…',
 ];
 
 /**
- * Terminal-style scan sequence shown while GitHub data is fetched
- * and before the DevCard materialises.
+ * Calm frosted-glass loading state shown while GitHub data is fetched.
  */
 export default function ScanSequence({ username }) {
   const [stepIdx, setStepIdx] = useState(0);
@@ -18,34 +16,21 @@ export default function ScanSequence({ username }) {
   useEffect(() => {
     const timer = setInterval(() => {
       setStepIdx((prev) => (prev < STEPS.length - 1 ? prev + 1 : prev));
-    }, 260);
+    }, 280);
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <div className="hud-panel scan-panel" role="status" aria-live="polite">
-      <span className="corner tl" />
-      <span className="corner tr" />
-      <span className="corner bl" />
-      <span className="corner br" />
-
+    <div className="glass-panel scan-panel fade-up" role="status" aria-live="polite">
       <div className="scan-loader-wrap">
         <LottieSlot
           slot="scan-loader"
           className="scan-lottie"
-          fallback={<div className="scan-ring" />}
+          fallback={<div className="spinner" />}
         />
       </div>
-
-      <p className="scan-target">TARGET // @{username}</p>
-      <div className="scan-logs">
-        {STEPS.slice(0, stepIdx + 1).map((line, i) => (
-          <div key={line} className={`scan-line ${i === stepIdx ? 'active' : 'done'}`}>
-            <span className="scan-prefix">{i === stepIdx ? '>' : '✓'}</span>
-            <span>{line}</span>
-          </div>
-        ))}
-      </div>
+      <p className="scan-handle">@{username}</p>
+      <p className="scan-step">{STEPS[stepIdx]}</p>
     </div>
   );
 }
